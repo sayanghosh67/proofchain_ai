@@ -4,7 +4,7 @@ An evidence-based project auditing application built with React 19, TanStack Sta
 
 ## What works in the source
 
-- Email/password, Google and GitHub sign-in through Supabase.
+- No login screen: visitors receive isolated Supabase anonymous sessions.
 - Project creation, editing, deletion with confirmation, ownership checks and consent controls.
 - Weighted milestones, acceptance criteria, claimed progress, linked evidence and historical Gemini assessments.
 - Private evidence uploads, SHA-256 duplicate detection, previews, deletion, and Gemini document/image analysis.
@@ -42,7 +42,9 @@ The migration creates the private `evidence` storage bucket, milestone/review/ch
 
 In Supabase Authentication:
 
-- Enable Email, Google and GitHub as desired.
+- **Enable Anonymous Sign-ins.** This is required for login-free guest access. Guest projects remain tied to the browser session; clearing browser storage can lose access.
+
+- Enable Email, GitHub as desired.
 - Configure provider credentials in Supabase, not in frontend code.
 - Add `http://localhost:5173/auth` (or your actual dev port) and `https://YOUR_HOST/auth` to allowed redirect URLs.
 - Set the production Site URL.

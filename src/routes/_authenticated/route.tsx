@@ -1,13 +1,5 @@
-import {
-  createFileRoute,
-  Link,
-  Outlet,
-  redirect,
-  useNavigate,
-  useRouterState,
-} from "@tanstack/react-router";
-import { useQueryClient } from "@tanstack/react-query";
-import { LayoutDashboard, FolderPlus, LogOut, Menu, Link2, ShieldCheck, X } from "lucide-react";
+import { createFileRoute, Link, Outlet, useRouterState } from "@tanstack/react-router";
+import { LayoutDashboard, FolderPlus, Menu, Link2, ShieldCheck, X } from "lucide-react";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
@@ -17,24 +9,20 @@ export const Route = createFileRoute("/_authenticated")({
   ssr: false,
   beforeLoad: async () => {
     const { data } = await supabase.auth.getUser();
-    if (!data.user) throw redirect({ to: "/auth" });
-    return { user: data.user };
+    if (data.user) return { user: data.user };
+    const guest = await supabase.auth.signInAnonymously();
+    if (guest.error || !guest.data.user)
+      throw new Error(
+        "Guest access is not configured yet. Enable Anonymous Sign-ins in Supabase Authentication to open this workspace without login.",
+      );
+    return { user: guest.data.user };
   },
   component: AppLayout,
 });
 
 function AppLayout() {
-  const { user } = Route.useRouteContext();
-  const qc = useQueryClient();
-  const nav = useNavigate();
   const path = useRouterState({ select: (s) => s.location.pathname });
   const [open, setOpen] = useState(false);
-  const signOut = async () => {
-    await qc.cancelQueries();
-    qc.clear();
-    await supabase.auth.signOut();
-    nav({ to: "/auth", replace: true });
-  };
   const items = [
     { to: "/dashboard", label: "Mission Control", icon: LayoutDashboard },
     { to: "/projects/new", label: "New Project", icon: FolderPlus },
@@ -81,12 +69,8 @@ function AppLayout() {
             </Link>
           ))}
         </nav>
-        <div className="absolute inset-x-4 bottom-4">
-          <p className="truncate px-3 text-xs text-muted-foreground">{user.email}</p>
-          <Button variant="ghost" onClick={signOut} className="mt-2 w-full justify-start gap-3">
-            <LogOut className="h-4 w-4" />
-            Sign out
-          </Button>
+        <div className="absolute inset-x-4 bottom-4 px-3 text-xs text-muted-foreground">
+          Private browser workspace
         </div>
       </aside>
       {open && (

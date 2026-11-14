@@ -139,20 +139,6 @@ export function Overview({ d }: { d: ProjectData }) {
           )
         }
       >
-        <Button
-          size="sm"
-          variant="outline"
-          className="mb-4"
-          onClick={async () => {
-            const { error } = await supabase.auth.signInWithOAuth({
-              provider: "github",
-              options: { scopes: "repo", redirectTo: window.location.origin + "/auth" },
-            });
-            if (error) toast.error(error.message);
-          }}
-        >
-          Authorize GitHub access
-        </Button>
         <p className="mb-3 text-xs text-muted-foreground">
           Import retrieves actual commits, pull requests, and Actions results. Private repositories
           require GitHub authorization; a commit alone does not prove completion.
