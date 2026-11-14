@@ -1,3 +1,4 @@
+import { BrowserVerification } from "@/components/pc/ws/BrowserVerification";
 import { readBrowserProjects } from "@/lib/browser-projects";
 import { ProjectManager } from "@/components/pc/ws/ProjectManager";
 import { Milestones } from "@/components/pc/ws/Milestones";
@@ -45,8 +46,9 @@ function ProjectPage() {
     <section className="space-y-5">
       <h1 className="text-3xl font-bold">{project.name}</h1>
       <p className="text-muted-foreground">
-        Saved in this browser. Evidence uploads and audits require the cloud workspace.
+        Saved in this browser. File evidence and AI audits use the cloud workspace.
       </p>
+      <BrowserVerification website={project.website_url} repository={project.github_url} />
       <dl className="space-y-4">
         {details
           .filter(([, value]) => value)

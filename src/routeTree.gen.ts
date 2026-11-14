@@ -15,6 +15,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedProjectsIdRouteImport } from './routes/_authenticated/projects.$id'
 import { Route as AuthenticatedProjectsNewRouteImport } from './routes/_authenticated/projects.new'
+import { Route as ApiPublicVerifyRouteImport } from './routes/api/public/verify'
 import { Route as AuthenticatedProjectsIdAccuracyRouteImport } from './routes/_authenticated/projects.$id_.accuracy'
 import { Route as AuthenticatedProjectsIdAgentsRouteImport } from './routes/_authenticated/projects.$id_.agents'
 import { Route as AuthenticatedProjectsIdAnomaliesRouteImport } from './routes/_authenticated/projects.$id_.anomalies'
@@ -62,6 +63,11 @@ const AuthenticatedProjectsNewRoute =
     path: '/projects/new',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const ApiPublicVerifyRoute = ApiPublicVerifyRouteImport.update({
+  id: '/api/public/verify',
+  path: '/api/public/verify',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedProjectsIdAccuracyRoute =
   AuthenticatedProjectsIdAccuracyRouteImport.update({
     id: '/projects/$id_/accuracy',
@@ -164,6 +170,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/projects/$id': typeof AuthenticatedProjectsIdRoute
   '/projects/new': typeof AuthenticatedProjectsNewRoute
+  '/api/public/verify': typeof ApiPublicVerifyRoute
   '/projects/$id/accuracy': typeof AuthenticatedProjectsIdAccuracyRoute
   '/projects/$id/agents': typeof AuthenticatedProjectsIdAgentsRoute
   '/projects/$id/anomalies': typeof AuthenticatedProjectsIdAnomaliesRoute
@@ -187,6 +194,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/projects/$id': typeof AuthenticatedProjectsIdRoute
   '/projects/new': typeof AuthenticatedProjectsNewRoute
+  '/api/public/verify': typeof ApiPublicVerifyRoute
   '/projects/$id/accuracy': typeof AuthenticatedProjectsIdAccuracyRoute
   '/projects/$id/agents': typeof AuthenticatedProjectsIdAgentsRoute
   '/projects/$id/anomalies': typeof AuthenticatedProjectsIdAnomaliesRoute
@@ -212,6 +220,7 @@ export interface FileRoutesById {
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/projects/$id': typeof AuthenticatedProjectsIdRoute
   '/_authenticated/projects/new': typeof AuthenticatedProjectsNewRoute
+  '/api/public/verify': typeof ApiPublicVerifyRoute
   '/_authenticated/projects/$id_/accuracy': typeof AuthenticatedProjectsIdAccuracyRoute
   '/_authenticated/projects/$id_/agents': typeof AuthenticatedProjectsIdAgentsRoute
   '/_authenticated/projects/$id_/anomalies': typeof AuthenticatedProjectsIdAnomaliesRoute
@@ -237,6 +246,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/projects/$id'
     | '/projects/new'
+    | '/api/public/verify'
     | '/projects/$id/accuracy'
     | '/projects/$id/agents'
     | '/projects/$id/anomalies'
@@ -260,6 +270,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/projects/$id'
     | '/projects/new'
+    | '/api/public/verify'
     | '/projects/$id/accuracy'
     | '/projects/$id/agents'
     | '/projects/$id/anomalies'
@@ -284,6 +295,7 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard'
     | '/_authenticated/projects/$id'
     | '/_authenticated/projects/new'
+    | '/api/public/verify'
     | '/_authenticated/projects/$id_/accuracy'
     | '/_authenticated/projects/$id_/agents'
     | '/_authenticated/projects/$id_/anomalies'
@@ -306,6 +318,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
+  ApiPublicVerifyRoute: typeof ApiPublicVerifyRoute
   ApiPublicDemoSplatRoute: typeof ApiPublicDemoSplatRoute
 }
 
@@ -352,6 +365,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/projects/new'
       preLoaderRoute: typeof AuthenticatedProjectsNewRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/api/public/verify': {
+      id: '/api/public/verify'
+      path: '/api/public/verify'
+      fullPath: '/api/public/verify'
+      preLoaderRoute: typeof ApiPublicVerifyRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_authenticated/projects/$id_/accuracy': {
       id: '/_authenticated/projects/$id_/accuracy'
@@ -519,6 +539,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
+  ApiPublicVerifyRoute: ApiPublicVerifyRoute,
   ApiPublicDemoSplatRoute: ApiPublicDemoSplatRoute,
 }
 export const routeTree = rootRouteImport
