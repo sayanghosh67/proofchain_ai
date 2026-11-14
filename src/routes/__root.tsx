@@ -146,7 +146,12 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const router = useRouter();
   useEffect(() => {
-    if (import.meta.env["VITE_BROWSER_WORKSPACE"] === "true") return;
+    if (
+      import.meta.env["VITE_BROWSER_WORKSPACE"] === "true" ||
+      !import.meta.env["VITE_SUPABASE_URL"] ||
+      !import.meta.env["VITE_SUPABASE_PUBLISHABLE_KEY"]
+    )
+      return;
     const { data } = supabase.auth.onAuthStateChange((event) => {
       if (event !== "SIGNED_IN" && event !== "SIGNED_OUT" && event !== "USER_UPDATED") return;
       router.invalidate();

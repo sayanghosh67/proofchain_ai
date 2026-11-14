@@ -8,7 +8,11 @@ import { Button } from "@/components/ui/button";
 export const Route = createFileRoute("/_authenticated")({
   ssr: false,
   beforeLoad: async () => {
-    if (import.meta.env["VITE_BROWSER_WORKSPACE"] === "true") {
+    if (
+      import.meta.env["VITE_BROWSER_WORKSPACE"] === "true" ||
+      !import.meta.env["VITE_SUPABASE_URL"] ||
+      !import.meta.env["VITE_SUPABASE_PUBLISHABLE_KEY"]
+    ) {
       return { workspaceMode: "browser" as const };
     }
     const { data } = await supabase.auth.getUser();
