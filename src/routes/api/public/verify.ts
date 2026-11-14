@@ -53,7 +53,10 @@ export const Route = createFileRoute("/api/public/verify")({
           const { website, repository } = input.parse(JSON.parse(body));
           const checks = [];
           const target = website ? new URL(website) : null;
-          const repo = repository.match(/^https:\/\/github\.com\/([\w-]+)\/([\w.-]+)\/?$/i);
+          const repo = repository
+            .trim()
+            .replace(/^URL\s+/i, "")
+            .match(/^https:\/\/github\.com\/([\w-]+)\/([\w.-]+)\/?$/i);
           if (
             target &&
             (!["https:", "http:"].includes(target.protocol) ||
