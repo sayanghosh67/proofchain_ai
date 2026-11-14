@@ -15,7 +15,10 @@ export const Route = createFileRoute("/api/public/verify")({
   server: {
     handlers: {
       POST: async ({ request }) => {
-        if (request.headers.get("origin") !== new URL(request.url).origin) {
+        if (
+          request.headers.get("sec-fetch-site") !== "same-origin" &&
+          request.headers.get("origin") !== new URL(request.url).origin
+        ) {
           return Response.json(
             { error: "Open the project page to run verification." },
             { status: 403 },
