@@ -1,3 +1,4 @@
+import { saveBrowserProject } from "@/lib/browser-projects";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
@@ -26,6 +27,7 @@ export const Route = createFileRoute("/_authenticated/projects/new")({
 
 function NewProject() {
   const nav = useNavigate();
+  const { workspaceMode } = Route.useRouteContext();
   const create = useServerFn(createProject);
   const [f, setF] = useState({
     name: "",
@@ -45,7 +47,10 @@ function NewProject() {
     e.preventDefault();
     setBusy(true);
     try {
-      const { id } = await create({ data: { ...f, ...consent } });
+      const { id } =
+        workspaceMode === "browser"
+          ? { id: saveBrowserProject(f) }
+          : await create({ data: { ...f, ...consent } });
       for (const file of files)
         await uploadEvidence(id, file).catch((err) => toast.error(`${file.name}: ${err.message}`));
       toast.success("Project saved");
@@ -112,17 +117,26 @@ function NewProject() {
           onChange={set("progress_report")}
         />
       </div>
-      <div>
-        <Label htmlFor="f">Evidence files (source, text, logs, images, PDF — max 10MB)</Label>
-        <Input
-          id="f"
-          type="file"
-          multiple
-          accept=".txt,.md,.log,.json,.csv,.ts,.tsx,.js,.jsx,.py,.go,.rs,.java,.c,.cpp,.css,.html,.png,.jpg,.jpeg,.webp,.pdf"
-          onChange={(e) => setFiles([...(e.target.files ?? [])])}
-        />
-      </div>
-      <ConsentFields value={consent} onChange={setConsent} />
+      {workspaceMode === "browser" ? (
+        <p className="text-sm text-muted-foreground">
+          This project will be saved in this browser. Evidence uploads and audits require the cloud
+          workspace.
+        </p>
+      ) : (
+        <>
+          <div>
+            <Label htmlFor="f">Evidence files (source, text, logs, images, PDF — max 10MB)</Label>
+            <Input
+              id="f"
+              type="file"
+              multiple
+              accept=".txt,.md,.log,.json,.csv,.ts,.tsx,.js,.jsx,.py,.go,.rs,.java,.c,.cpp,.css,.html,.png,.jpg,.jpeg,.webp,.pdf"
+              onChange={(e) => setFiles([...(e.target.files ?? [])])}
+            />
+          </div>
+          <ConsentFields value={consent} onChange={setConsent} />
+        </>
+      )}
       <Button type="submit" variant="hero" disabled={busy}>
         {busy ? "Saving…" : "Create project"}
       </Button>

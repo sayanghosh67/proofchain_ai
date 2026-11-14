@@ -1,4 +1,4 @@
-import { createFileRoute, Link, Outlet, useRouterState } from "@tanstack/react-router";
+import { createFileRoute, Link, Outlet, useRouter, useRouterState } from "@tanstack/react-router";
 import { LayoutDashboard, FolderPlus, Menu, Link2, ShieldCheck, X } from "lucide-react";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -9,16 +9,44 @@ export const Route = createFileRoute("/_authenticated")({
   ssr: false,
   beforeLoad: async () => {
     const { data } = await supabase.auth.getUser();
-    if (data.user) return { user: data.user };
+    if (data.user) return { workspaceMode: "cloud" as const };
     const guest = await supabase.auth.signInAnonymously();
-    if (guest.error || !guest.data.user)
+    if (
+      guest.error?.code === "anonymous_provider_disabled" &&
+      import.meta.env.DEV &&
+      ["127.0.0.1", "localhost", "[::1]"].includes(window.location.hostname)
+    ) {
+      return { workspaceMode: "browser" as const };
+    }
+    if (guest.error?.code === "anonymous_provider_disabled")
       throw new Error(
         "Guest access is not configured yet. Enable Anonymous Sign-ins in Supabase Authentication to open this workspace without login.",
       );
-    return { user: guest.data.user };
+    if (guest.error || !guest.data.user)
+      throw new Error("Could not start a guest session. Try again in a moment.");
+    return { workspaceMode: "cloud" as const };
   },
+  errorComponent: WorkspaceError,
   component: AppLayout,
 });
+
+function WorkspaceError({ error }: { error: unknown }) {
+  const router = useRouter();
+  return (
+    <main className="mx-auto max-w-xl space-y-4 px-6 py-16">
+      <h1 className="text-2xl font-bold">Workspace unavailable</h1>
+      <p role="alert" className="text-muted-foreground">
+        {error instanceof Error ? error.message : "Could not open the workspace."}
+      </p>
+      <div className="flex gap-3">
+        <Button onClick={() => void router.invalidate()}>Try again</Button>
+        <Button asChild variant="outline">
+          <Link to="/">Go home</Link>
+        </Button>
+      </div>
+    </main>
+  );
+}
 
 function AppLayout() {
   const path = useRouterState({ select: (s) => s.location.pathname });

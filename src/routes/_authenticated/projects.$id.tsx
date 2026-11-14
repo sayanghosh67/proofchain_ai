@@ -1,3 +1,4 @@
+import { readBrowserProjects } from "@/lib/browser-projects";
 import { ProjectManager } from "@/components/pc/ws/ProjectManager";
 import { Milestones } from "@/components/pc/ws/Milestones";
 import { Investigator } from "@/components/pc/ws/Investigator";
@@ -28,6 +29,39 @@ export const Route = createFileRoute("/_authenticated/projects/$id")({
 });
 
 function ProjectPage() {
+  const { workspaceMode } = Route.useRouteContext();
+  const { id } = Route.useParams();
+  if (workspaceMode === "cloud") return <CloudProject />;
+  const project = readBrowserProjects().find((item) => item.id === id);
+  if (!project) return <p>Project not found in this browser.</p>;
+  const details = [
+    ["Description", project.description],
+    ["Requirements", project.requirements],
+    ["Progress report", project.progress_report],
+    ["Website", project.website_url],
+    ["GitHub repository", project.github_url],
+  ];
+  return (
+    <section className="space-y-5">
+      <h1 className="text-3xl font-bold">{project.name}</h1>
+      <p className="text-muted-foreground">
+        Saved in this browser. Evidence uploads and audits require the cloud workspace.
+      </p>
+      <dl className="space-y-4">
+        {details
+          .filter(([, value]) => value)
+          .map(([label, value]) => (
+            <div key={label}>
+              <dt className="font-semibold">{label}</dt>
+              <dd className="whitespace-pre-wrap break-words">{value}</dd>
+            </div>
+          ))}
+      </dl>
+    </section>
+  );
+}
+
+function CloudProject() {
   const { id } = Route.useParams();
   const { autostart } = Route.useSearch();
   const { data, isLoading, error } = useQuery(projectQuery(id));

@@ -1,3 +1,4 @@
+import { readBrowserProjects } from "@/lib/browser-projects";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
@@ -65,6 +66,44 @@ function useStats() {
 }
 
 function Dashboard() {
+  const { workspaceMode } = Route.useRouteContext();
+  return workspaceMode === "browser" ? <BrowserDashboard /> : <CloudDashboard />;
+}
+
+function BrowserDashboard() {
+  const projects = readBrowserProjects();
+  return (
+    <section className="space-y-5">
+      <h1 className="text-3xl font-bold">Mission Control</h1>
+      <p className="text-muted-foreground">
+        Projects are saved in this browser. Evidence uploads and audits require the cloud workspace.
+      </p>
+      <Button asChild variant="hero">
+        <Link to="/projects/new">Create project</Link>
+      </Button>
+      {projects.length ? (
+        <ul className="space-y-2">
+          {projects.map((project) => (
+            <li key={project.id}>
+              <Link
+                className="block rounded-lg border p-4 hover:bg-muted"
+                to="/projects/$id"
+                params={{ id: project.id }}
+                search={{ autostart: undefined }}
+              >
+                {project.name}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p>No projects yet.</p>
+      )}
+    </section>
+  );
+}
+
+function CloudDashboard() {
   const live = useLiveAudit();
   const [selectedProject, setSelectedProject] = useState("");
   const { data, isLoading, error } = useStats();
