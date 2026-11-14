@@ -46,6 +46,17 @@ do $$ declare t text; begin
   execute format('create policy "parent project ownership" on public.%I as restrictive for all to authenticated using (exists (select 1 from public.projects p where p.id = project_id and p.user_id = auth.uid())) with check (exists (select 1 from public.projects p where p.id = project_id and p.user_id = auth.uid()))', t);
  end loop;
 end $$;
+-- Existing permissive policies must not bypass parent-project ownership.
+do $$ declare t text; begin
+ foreach t in array array['milestones','evidence_reviews','investigator_messages'] loop
+  execute format('drop policy if exists "product parent scope" on public.%I', t);
+  execute format('create policy "product parent scope" on public.%I as restrictive for all to authenticated using (user_id = auth.uid() and exists (select 1 from public.projects p where p.id = project_id and p.user_id = auth.uid())) with check (user_id = auth.uid() and exists (select 1 from public.projects p where p.id = project_id and p.user_id = auth.uid()))', t);
+ end loop;
+end $$;
+drop policy if exists "owned audit parent" on public.tool_calls;
+create policy "owned audit parent" on public.tool_calls as restrictive for all to authenticated
+using (exists (select 1 from public.audit_runs r where r.id = audit_run_id and r.user_id = auth.uid()))
+with check (exists (select 1 from public.audit_runs r where r.id = audit_run_id and r.user_id = auth.uid()));
 create table if not exists public.ai_rate_limits (user_id uuid primary key, window_start timestamptz not null, requests integer not null);
 alter table public.ai_rate_limits enable row level security;
 create or replace function public.proofchain_consume_ai_budget() returns boolean

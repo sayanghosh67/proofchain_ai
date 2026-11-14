@@ -25,6 +25,8 @@ Date: 14 November 2026
 - Gemini live model listing: passed with the supplied credential.
 - Gemini live structured JSON request: passed using `gemini-2.5-flash` and the application's adapter.
 - Gemini live function call and tool-result continuation: passed.
+- GitHub public-repository importer: passed against the uploaded repository, returning its real commit and workflow records.
+- Compiled Node server: started successfully; landing and sign-in routes returned 200, and the retired demo endpoint returned 404.
 - Client build scan: no Gemini API key references or Node HTTP implementation in browser assets.
 - Dependency review: patched the reported high-severity Vite issue by upgrading to 8.3.8; eleven moderate advisories remained in the full development dependency tree at installation time.
 

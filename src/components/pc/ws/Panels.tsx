@@ -115,7 +115,10 @@ export function Overview({ d }: { d: ProjectData }) {
                   const r = await gh({
                     data: {
                       projectId: d.project.id,
-                      token: session.session?.provider_token ?? undefined,
+                      token:
+                        session.session?.user.app_metadata["provider"] === "github"
+                          ? (session.session.provider_token ?? undefined)
+                          : undefined,
                     },
                   });
                   if ("error" in r && r.error) toast.error(r.error);
