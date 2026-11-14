@@ -8,6 +8,9 @@ import { Button } from "@/components/ui/button";
 export const Route = createFileRoute("/_authenticated")({
   ssr: false,
   beforeLoad: async () => {
+    if (import.meta.env["VITE_BROWSER_WORKSPACE"] === "true") {
+      return { workspaceMode: "browser" as const };
+    }
     const { data } = await supabase.auth.getUser();
     if (data.user) return { workspaceMode: "cloud" as const };
     const guest = await supabase.auth.signInAnonymously();
