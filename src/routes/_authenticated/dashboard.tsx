@@ -72,6 +72,8 @@ function Dashboard() {
 
 function BrowserDashboard() {
   const projects = readBrowserProjects();
+  const [selectedId, setSelectedId] = useState("");
+  const activeProject = projects.find((project) => project.id === selectedId) ?? projects[0];
   return (
     <section className="space-y-5">
       <h1 className="text-3xl font-bold">Mission Control</h1>
@@ -99,6 +101,28 @@ function BrowserDashboard() {
       ) : (
         <p>No projects yet.</p>
       )}
+      <section className="space-y-4" aria-labelledby="dashboard-features">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <h2 id="dashboard-features" className="text-xl font-semibold">
+            Project features
+          </h2>
+          {activeProject && (
+            <Select value={activeProject.id} onValueChange={setSelectedId}>
+              <SelectTrigger aria-label="Project for feature links" className="w-full sm:w-64">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {projects.map((project) => (
+                  <SelectItem key={project.id} value={project.id}>
+                    {project.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
+        </div>
+        <FeatureGrid {...(activeProject ? { id: activeProject.id } : {})} browser />
+      </section>
     </section>
   );
 }

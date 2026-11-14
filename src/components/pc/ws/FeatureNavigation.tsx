@@ -19,7 +19,12 @@ export function FeatureNavigation({ id, active }: { id: string; active?: Feature
           size="sm"
           className="h-auto min-h-8 whitespace-normal text-left"
         >
-          <Link to={f.to} params={{ id }} aria-current={active === f.key ? "page" : undefined}>
+          <Link
+            to={f.to}
+            params={{ id }}
+            hash={f.key === "management" || f.key === "investigator" ? f.key : ""}
+            aria-current={active === f.key ? "page" : undefined}
+          >
             <f.icon className="mr-1 size-3.5 shrink-0" />
             {f.title}
           </Link>
@@ -29,34 +34,44 @@ export function FeatureNavigation({ id, active }: { id: string; active?: Feature
   );
 }
 
-export function FeatureGrid({ id }: { id: string }) {
+export function FeatureGrid({ id, browser = false }: { id?: string; browser?: boolean }) {
   return (
     <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-      {FEATURES.map((f, i) => (
-        <article
-          key={f.key}
-          className="flex min-w-0 flex-col items-start gap-4 rounded-lg border border-border bg-card/60 p-5"
-        >
-          <div className="flex w-full items-center justify-between">
-            <f.icon className="size-5 text-primary" />
-            <span className="font-mono text-xs text-muted-foreground">
-              {String(i + 1).padStart(2, "0")}
-            </span>
-          </div>
-          <h3 className="min-h-10 text-sm font-semibold">{f.title}</h3>
-          <Button
-            asChild
-            variant="outline"
-            size="sm"
-            className="mt-auto h-auto min-h-8 max-w-full whitespace-normal"
+      {FEATURES.map((feature) => {
+        const publicCheck = ["github", "tests", "verification"].includes(feature.key);
+        const overviewSection = feature.key === "management" || feature.key === "investigator";
+        const available = id && (!browser || publicCheck || feature.key === "management");
+        const hash = browser
+          ? publicCheck
+            ? "project-verification"
+            : undefined
+          : overviewSection
+            ? feature.key
+            : undefined;
+        return (
+          <article
+            key={feature.key}
+            className="flex min-w-0 flex-col items-start gap-3 rounded-lg border border-border bg-card/60 p-5"
           >
-            <Link to={f.to} params={{ id }}>
-              {f.action}
-              <ArrowUpRight className="ml-2 size-4 shrink-0" />
-            </Link>
-          </Button>
-        </article>
-      ))}
+            <feature.icon aria-hidden="true" className="size-5 text-primary" />
+            <h3 className="text-sm font-semibold">{feature.title}</h3>
+            {available ? (
+              <Button asChild variant="outline" size="sm" className="mt-auto">
+                <Link to={browser ? "/projects/$id" : feature.to} params={{ id }} hash={hash ?? ""}>
+                  {browser ? (publicCheck ? "Run verification" : "View project") : feature.action}
+                  <ArrowUpRight className="ml-2 size-4 shrink-0" />
+                </Link>
+              </Button>
+            ) : (
+              <p className="mt-auto text-xs text-muted-foreground">
+                {browser && !publicCheck && feature.key !== "management"
+                  ? "Requires cloud workspace"
+                  : "Select or create a project"}
+              </p>
+            )}
+          </article>
+        );
+      })}
     </div>
   );
 }

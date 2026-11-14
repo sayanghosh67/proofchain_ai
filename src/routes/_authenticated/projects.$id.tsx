@@ -98,9 +98,13 @@ function CloudProject() {
         <FeatureGrid id={id} />
       </section>
       <Overview d={data} />
-      <Milestones d={data} />
-      <Investigator d={data} />
-      <ProjectManager d={data} />
+      <section id="management" className="space-y-6">
+        <Milestones d={data} />
+        <ProjectManager d={data} />
+      </section>
+      <section id="investigator">
+        <Investigator d={data} />
+      </section>
     </div>
   );
 }

@@ -18,6 +18,20 @@ import {
 
 export const FEATURES = [
   {
+    key: "management",
+    title: "Project & milestones",
+    action: "Manage project",
+    icon: LayoutDashboard,
+    to: "/projects/$id",
+  },
+  {
+    key: "investigator",
+    title: "AI Audit Investigator",
+    action: "Ask investigator",
+    icon: Bot,
+    to: "/projects/$id",
+  },
+  {
     key: "agents",
     title: "Multi-agent audit",
     action: "Open agents",

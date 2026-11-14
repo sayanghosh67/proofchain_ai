@@ -40,7 +40,7 @@ export function BrowserVerification({
   }
 
   return (
-    <section className="space-y-4 rounded-lg border p-5">
+    <section id="project-verification" className="space-y-4 rounded-lg border p-5">
       <h2 className="text-xl font-semibold">Project verification</h2>
       <p className="text-sm text-muted-foreground">
         Check the website response, selected security headers, and recent public GitHub activity.
