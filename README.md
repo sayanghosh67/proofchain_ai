@@ -16,9 +16,10 @@ An evidence-based project auditing application built with React 19, TanStack Sta
 
 ## Run locally
 
-Use Node.js 22.12 or newer:
+Use Node.js 22.12 or newer and npm 11.6.2 (the lockfile generator version):
 
 ```sh
+npm install --global npm@11.6.2
 npm ci
 cp .env.example .env
 # Fill .env with your Supabase project settings and server-only Gemini settings.
@@ -52,7 +53,7 @@ In Supabase Authentication:
 This is a **Node server application**, not a GitHub Pages static website.
 Use Render, Railway, a Node-capable host, or the included Dockerfile.
 
-- Build command: `npm ci && npm run build`
+- Build command: `npm install --global npm@11.6.2 && npm ci && npm run build`
 - Start command: `npm start`
 - Node version: 22 or newer
 - Configure all variables from `.env.example` in the hosting dashboard. `VITE_*` values must be available at build time; server variables must be available at runtime.
